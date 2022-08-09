@@ -44,10 +44,12 @@ class Game:
         self.status = True # false is game over
         # create a 2D list to store block
         self.blocks = []
+        self.display_block = []
         self.remain_block = size * size
         self.remain_mine = self.mine_num
         self.win = False
         
+        # create randon game board
         for i in range(self.size):
             new_list = []
             for j in range(self.size):
@@ -75,9 +77,23 @@ class Game:
                         adjacent_mine_num += 1
                 block.num = adjacent_mine_num
                 
+        # create display block
+        for i in range(self.size + 1):
+            self.display_block.append([])
+            for j in range(self.size + 1):
+                self.display_block[i].append(0)
+        
+        for i in range(self.mine_size):
+            self.display_block[0][i+2] = i + 1
+            self.display_block[i+2][0] = i + 1
+                
     # display the gameboard
     def display(self):
-        for list in self.blocks:
+        for i in range(self.size):
+            for j in range(self.size):
+                self.display_block[i+1][j+1] = self.blocks[i][j]
+        
+        for list in self.display_block:
             print(list)
     
     # display the answer
@@ -146,29 +162,44 @@ def game_start(size=9, mine_num=10):
         print('Type "c x y" to click block')
         print('Type "f x y" to flag block')
         print('Type "u x y" to unflag block')
+        print(divide_line)
         command = input('Enter your move: ').split()
         if command[0] == 'end':
             print('You have abondoned this game!')
             game.status = False
             continue
-        x, y = int(command[1]), int(command[2])
-        if 0 < x <= size and 0 < y <= size:
+        
+        if len(command) == 3:
+            y, x = int(command[1]), int(command[2])
+            if not (0 < x <= size and 0 < y <= size):
+                print('Input wrong x or y!')
             if command[0] == 'c':
                 game.click(x, y)
-            if command[0] == 'f':
+            elif command[0] == 'f':
                 game.flag(x, y)
-            if command[0] == 'u':
+            elif command[0] == 'u':
                 game.unflag(x, y)
+            else:
+                print('Input wrong command!')
             game.is_win()
         else:
-            print('Input wrong answer!')
+            print('Missing x or y!')
 
         print(divide_line)
         print('')
     
     if game.win:
-        print('You have win!')
+        print('==========================')
+        print('===                    ===')
+        print('=== =  =  = === ==   = ===')
+        print('=== =  =  =  =  ==   = ===')
+        print('=== =  =  =  =  = =  = ===')
+        print('===  = = =   =  =  = = ===')
+        print('===   = =   === =   == ===')
+        print('===                    ===')
+        print('==========================')
+        
     else:
         print('You have lose!')
     
-game_start(size=20, mine_num=20)
+game_start(size=9, mine_num=10)
